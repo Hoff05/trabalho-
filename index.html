@@ -159,7 +159,7 @@
 
     <header>
         <h1>Story Maker Live</h1>
-        <p>Controle diário (Alertas ativos a partir das 09:30)</p>
+        <p>Controle diário (Bom dia às 09:30 | Alertas de 30 em 30 min)</p>
     </header>
 
     <div id="permissionBanner" class="notification-banner">
@@ -172,12 +172,12 @@
         <div class="column col-sc">
             <h2>🚗 SC Automóveis</h2>
             
-            <div class="time-slot" data-time="08:30" onclick="toggleTask(this)">
-                <div class="time">08:30</div>
+            <div class="time-slot" data-time="09:30" onclick="toggleTask(this)">
+                <div class="time">09:30</div>
                 <div class="checkbox-container"><input type="checkbox"><div><div class="task-text">SC: Bom dia Stories</div><div class="task-desc">Engajamento inicial/Frase/Café</div></div></div>
             </div>
-            <div class="time-slot" data-time="10:00" onclick="toggleTask(this)">
-                <div class="time">10:00</div>
+            <div class="time-slot" data-time="10:30" onclick="toggleTask(this)">
+                <div class="time">10:30</div>
                 <div class="checkbox-container"><input type="checkbox"><div><div class="task-text">SC: Stories da Loja (Carros)</div><div class="task-desc">Mostrando o estoque e detalhes</div></div></div>
             </div>
             <div class="time-slot" data-time="11:30" onclick="toggleTask(this)">
@@ -188,8 +188,8 @@
                 <div class="time">13:30</div>
                 <div class="checkbox-container"><input type="checkbox"><div><div class="task-text">SC: Stories Lavação / Test Drive</div><div class="task-desc">Bastidores e capricho com os carros</div></div></div>
             </div>
-            <div class="time-slot" data-time="15:00" onclick="toggleTask(this)">
-                <div class="time">15:00</div>
+            <div class="time-slot" data-time="15:30" onclick="toggleTask(this)">
+                <div class="time">15:30</div>
                 <div class="checkbox-container"><input type="checkbox"><div><div class="task-text">SC: Stories Dia a Dia</div><div class="task-desc">Movimento da loja e equipe</div></div></div>
             </div>
             <div class="time-slot" data-time="17:30" onclick="toggleTask(this)">
@@ -202,16 +202,16 @@
         <div class="column col-leo">
             <h2>🔥 Léo Repasses</h2>
 
-            <div class="time-slot" data-time="08:00" onclick="toggleTask(this)">
-                <div class="time">08:00</div>
+            <div class="time-slot" data-time="09:30" onclick="toggleTask(this)">
+                <div class="time">09:30</div>
                 <div class="checkbox-container"><input type="checkbox"><div><div class="task-text">LÉO: Stories Bom Dia</div><div class="task-desc">Abertura de dia padrão</div></div></div>
             </div>
-            <div class="time-slot" data-time="09:00" onclick="toggleTask(this)">
-                <div class="time">09:00</div>
+            <div class="time-slot" data-time="10:00" onclick="toggleTask(this)">
+                <div class="time">10:00</div>
                 <div class="checkbox-container"><input type="checkbox"><div><div class="task-text">LÉO: REELS: Tortelli Bom Dia</div><div class="task-desc">Tortelli chamando o público para a loja</div></div></div>
             </div>
-            <div class="time-slot" data-time="10:45" onclick="toggleTask(this)">
-                <div class="time">10:45</div>
+            <div class="time-slot" data-time="11:00" onclick="toggleTask(this)">
+                <div class="time">11:00</div>
                 <div class="checkbox-container"><input type="checkbox"><div><div class="task-text">LÉO: REELS: Tortelli mostrando Pátio</div><div class="task-desc">Giro rápido pelas novidades</div></div></div>
             </div>
             <div class="time-slot" data-time="13:00" onclick="toggleTask(this)">
@@ -234,7 +234,7 @@
     </div>
 
     <div class="actions">
-        <button class="btn test-btn" onclick="triggerNotification('🚗 Teste de Alerta!', 'As notificações estão configuradas corretamente.')">Testar Alerta</button>
+        <button class="btn test-btn" onclick="triggerNotification('🚗 Teste de Alerta!', 'As notificações repetitivas estão prontas a partir das 09:30.')">Testar Alerta</button>
         <button class="btn clear-btn" onclick="resetChecklist()">Resetar Checklist</button>
     </div>
 
@@ -282,11 +282,12 @@
             Notification.requestPermission().then(permission => {
                 if (permission === "granted") {
                     document.getElementById('permissionBanner').style.display = 'none';
-                    triggerNotification("✅ Tudo pronto!", "As notificações de horário estão ativadas.");
+                    triggerNotification("✅ Tudo pronto!", "Lembretes diários ajustados. Início às 09:30.");
                 }
             });
         }
 
+        // Função que manda a notificação física
         function triggerNotification(title, bodyText) {
             if (Notification.permission === "granted") {
                 new Notification(title, {
@@ -296,26 +297,39 @@
             }
         }
 
-        // Relógio modificado com trava para iniciar apenas após às 09:30
+        // Sistema inteligente que varre as pendências de 30 em 30 minutos
         function checkTimeDeadlines() {
             const agora = new Date();
-            const hora = agora.getHours();
-            const minuto = agora.getMinutes();
+            const minutos = agora.getMinutes();
 
-            // Bloqueia qualquer verificação se for antes de 09:30 da manhã
-            if (hora < 9 || (hora === 9 && minuto < 30)) {
+            // Só roda a checagem nos minutos :00 ou :30
+            if (minutos !== 0 && minutos !== 30) {
                 return; 
             }
 
-            const horaMinutoStr = agora.toTimeString().substring(0, 5); // Ex: "10:00"
+            const horaAtualNum = agora.getHours();
+
+            // Bloqueia qualquer notificação geral antes das 09:30 da manhã
+            if (horaAtualNum < 9 || (horaAtualNum === 9 && minutos < 30)) {
+                return;
+            }
 
             document.querySelectorAll('.time-slot').forEach(slot => {
                 const targetTime = slot.getAttribute('data-time');
                 const checkbox = slot.querySelector('input[type="checkbox"]');
                 
-                if (targetTime === horaMinutoStr && !checkbox.checked) {
-                    const taskName = slot.querySelector('.task-text').innerText;
-                    triggerNotification("⏰ Hora de Postar!", `Não se esqueça: "${taskName}"`);
+                if (targetTime) {
+                    const parts = targetTime.split(':');
+                    const taskHora = parseInt(parts[0], 10);
+                    const taskMinuto = parseInt(parts[1], 10);
+
+                    // Se a tarefa não estiver marcada e o horário dela já passou ou é agora
+                    if (!checkbox.checked) {
+                        if (horaAtualNum > taskHora || (horaAtualNum === taskHora && minutos >= taskMinuto)) {
+                            const taskName = slot.querySelector('.task-text').innerText;
+                            triggerNotification("⚠️ Alerta de Pendência!", `Você ainda não postou: "${taskName}"`);
+                        }
+                    }
                 }
             });
         }
@@ -332,7 +346,7 @@
 
         window.onload = () => {
             loadState();
-            setInterval(checkTimeDeadlines, 60000);
+            setInterval(checkTimeDeadlines, 60000); // Monitora o relógio a cada minuto
         };
     </script>
 </body>
